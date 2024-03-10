@@ -1,0 +1,59 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Tenrr - Home Page</title>
+    <!-- Add any additional CSS files here -->
+    <link rel="stylesheet" href="{% static 'css/style.css' %}">
+</head>
+
+<body>
+    <header>
+        <!-- Logo will go here -->
+        <img src="{% static 'images/TenrrLogo.png' %}" alt="Tenrr Logo" id="logo">
+        <!-- Navigation bar -->
+        <nav>
+            <ul>
+                <li><a href="{% url 'tenrr:search' %}">SEARCH</a></li>
+                <li><a href="{% url 'tenrr:about' %}">ABOUT</a></li>
+                <li><a href="{% url 'tenrr:recommendations' %}">RECOMMENDATIONS</a></li>
+                <!-- The login and sign up can be buttons or links depending on your design -->
+                <li><a href="{% url 'tenrr:login' %}">LOGIN</a></li>
+                <li><a href="{% url 'tenrr:signup' %}">SIGN UP</a></li>
+            </ul>
+        </nav>
+    </header>
+
+    <main>
+        <h1>Browse various freelancers and their services</h1>
+        <!-- Search form -->
+        <form action="{% url 'tenrr:search' %}" method="get">
+            <input type="text" name="query" placeholder="search">
+            <button type="submit">Search</button>
+        </form>
+
+        <!-- Category buttons -->
+        <section id="categories">
+            <h2>Popular Categories:</h2>
+            <div>
+                <!-- Replace '#' with the actual URL to the search page with category filter -->
+                <a href="#">category 1</a>
+                <a href="#">category 2</a>
+                <a href="#">category 3</a>
+                <a href="#">category 4</a>
+            </div>
+        </section>
+    </main>
+
+    <footer>
+        <p>&copy; 2024 Tenrr</p>
+    </footer>
+
+    <!-- Add any additional JS files here -->
+    <script src="{% static 'js/script.js' %}"></script>
+</body>
+
+</html>
