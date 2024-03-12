@@ -1,0 +1,230 @@
+/* Reset some basic elements */
+body, h1, h2, form, button {
+    margin: 0;
+    padding: 0;
+    font-family: 'Roboto', sans-serif;
+}
+
+/* Container styling */
+.container {
+    width: 90%;
+    max-width: 1200px;
+    margin: auto;
+}
+
+/* Header styling */
+header {
+    background-color: #007BFF;
+    color: #ffffff;
+    padding: 20px 0;
+}
+
+header img#logo {
+    height: 50px;
+    margin-left: 20px;
+}
+
+header nav ul {
+    list-style: none;
+    display: flex;
+    justify-content: flex-end;
+    align-items: center;
+}
+
+header nav ul li {
+    margin-right: 20px;
+}
+
+header nav ul li a {
+    color: #ffffff;
+    text-decoration: none;
+    font-weight: 500;
+}
+
+/* Hero section styling */
+.hero {
+    background-color: #f8f9fa;
+    padding: 50px 0;
+    text-align: center;
+}
+
+.hero h1 {
+    color: #333333;
+    margin-bottom: 20px;
+}
+
+.search-form {
+    display: flex;
+    justify-content: center;
+    margin-top: 20px;
+}
+
+.search-form input[type="text"] {
+    border: none;
+    padding: 10px;
+    width: 300px;
+    margin-right: -5px; /* Removes the gap between input and button */
+}
+
+.search-form button {
+    border: none;
+    background-color: #007bff;
+    color: #ffffff;
+    padding: 10px 20px;
+    cursor: pointer;
+}
+
+/* Categories section styling */
+#categories {
+    padding: 50px 0;
+}
+
+.categories-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+    gap: 20px;
+    text-align: center;
+}
+
+#categories a {
+    background-color: #007bff;
+    color: #ffffff;
+    display: block;
+    padding: 20px;
+    border-radius: 5px;
+    text-decoration: none;
+    transition: background-color 0.3s;
+}
+
+#categories a:hover {
+    background-color: #0056b3;
+}
+
+/* Footer styling */
+footer {
+    background-color: #343a40;
+    color: #ffffff;
+    padding: 20px 0;
+    text-align: center;
+}
+
+/* Responsive design */
+@media (max-width: 768px) {
+    header nav ul {
+        flex-direction: column;
+    }
+
+    .search-form input[type="text"] {
+        width: 80%;
+    }
+}
+
+/* Additional CSS for About page */
+
+.team, .testimonials {
+    margin-top: 50px;
+}
+
+.team-members {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+    gap: 20px;
+    text-align: center;
+}
+
+.team-member img {
+    width: 100%;
+    max-width: 150px;
+    border-radius: 50%;
+    margin: 0 auto 20px;
+}
+
+.testimonial p {
+    font-style: italic;
+    margin-bottom: 10px;
+}
+
+
+/* sign up page */
+
+/* Additional CSS for the Sign Up page */
+
+.signup-form {
+    margin: 50px 0;
+}
+
+.form-group {
+    margin-bottom: 20px;
+}
+
+label {
+    display: block;
+    margin-bottom: 5px;
+}
+
+input[type="text"],
+input[type="email"],
+input[type="password"] {
+    width: 100%;
+    padding: 10px;
+    margin-bottom: 10px;
+    border: 1px solid #ccc;
+    border-radius: 5px;
+}
+
+button.btn {
+    background-color: #007bff;
+    color: #ffffff;
+    padding: 10px 20px;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+    display: inline-block;
+}
+
+button.btn:hover {
+    background-color: #0056b3;
+}
+
+
+/* Additional CSS for the Login page */
+
+.login-form {
+    margin: 50px 0;
+}
+
+.form-group {
+    margin-bottom: 20px;
+}
+
+label {
+    display: block;
+    margin-bottom: 5px;
+}
+
+input[type="text"],
+input[type="password"] {
+    width: 100%;
+    padding: 10px;
+    margin-bottom: 10px;
+    border: 1px solid #ccc;
+    border-radius: 5px;
+}
+
+button.btn {
+    background-color: #007bff;
+    color: white;
+    padding: 10px 20px;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+    display: inline-block;
+}
+
+button.btn:hover {
+    background-color: #0056b3;
+}
+
+.login-form p {
+    text-align: center;
+}

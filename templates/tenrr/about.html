@@ -1,0 +1,74 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Tenrr - About Us</title>
+    <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;500;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="{% static 'css/style.css' %}">
+</head>
+<body>
+
+<header>
+    <div class="container">
+        <img src="{% static 'images/TenrrLogo.png' %}" alt="Tenrr Logo" id="logo">
+        <nav>
+            <ul>
+                <li><a href="{% url 'tenrr:index' %}">HOME</a></li>
+                <li><a href="{% url 'tenrr:search' %}">SEARCH</a></li>
+                <li><a href="{% url 'tenrr:about' %}">ABOUT</a></li>
+                <li><a href="{% url 'tenrr:recommendations' %}">RECOMMENDATIONS</a></li>
+                <li><a href="{% url 'tenrr:login' %}">LOGIN</a></li>
+                <li><a href="{% url 'tenrr:signup' %}">SIGN UP</a></li>
+            </ul>
+        </nav>
+    </div>
+</header>
+
+<main>
+    <section class="hero">
+        <div class="container">
+            <h1>About Tenrr</h1>
+            <p>Discover more about our mission and the team behind Tenrr.</p>
+        </div>
+    </section>
+
+    <section class="container">
+        <h2>Our Mission</h2>
+        <p>Tenrr is dedicated to connecting freelancers with opportunities to showcase their talents and grow their businesses. We believe in creating a community where every talent can find a stage and every challenge a solution.</p>
+    </section>
+
+    <section class="container team">
+        <h2>Meet the Team</h2>
+        <div class="team-members">
+            <!-- Example Team Member -->
+            <div class="team-member">
+                <img src="{% static 'images/team-member-1.png' %}" alt="Team Member Name">
+                <h3>Team Member Name</h3>
+                <p>Role Description</p>
+            </div>
+            <!-- Add more team members here -->
+        </div>
+    </section>
+
+    <section class="container testimonials">
+        <h2>Testimonials</h2>
+        <div class="testimonial">
+            <p>"Tenrr has been a game-changer for my freelance career. The platform is intuitive, and the community is incredibly supportive."</p>
+            <p>- Freelancer Name</p>
+        </div>
+        <!-- Add more testimonials here -->
+    </section>
+</main>
+
+<footer>
+    <div class="container">
+        <p>&copy; 2024 Tenrr - All Rights Reserved</p>
+        <!-- Add social media icons -->
+    </div>
+</footer>
+
+<script src="{% static 'js/script.js' %}"></script>
+</body>
+</html>

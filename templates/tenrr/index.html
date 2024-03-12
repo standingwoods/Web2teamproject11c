@@ -5,54 +5,59 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="Browse and hire top freelancers on Tenrr. Find services in design, programming, marketing, and more.">
     <title>Tenrr - Home Page</title>
-    <!-- Add any additional CSS files here -->
+    <!-- Google Fonts -->
+    <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;500;700&display=swap" rel="stylesheet">
+    <!-- Custom CSS -->
     <link rel="stylesheet" href="{% static 'css/style.css' %}">
 </head>
 
 <body>
     <header>
-        <!-- Logo will go here -->
-        <img src="{% static 'images/TenrrLogo.png' %}" alt="Tenrr Logo" id="logo">
-        <!-- Navigation bar -->
-        <nav>
-            <ul>
-                <li><a href="{% url 'tenrr:search' %}">SEARCH</a></li>
-                <li><a href="{% url 'tenrr:about' %}">ABOUT</a></li>
-                <li><a href="{% url 'tenrr:recommendations' %}">RECOMMENDATIONS</a></li>
-                <!-- The login and sign up can be buttons or links depending on your design -->
-                <li><a href="{% url 'tenrr:login' %}">LOGIN</a></li>
-                <li><a href="{% url 'tenrr:signup' %}">SIGN UP</a></li>
-            </ul>
-        </nav>
+        <div class="container">
+            <img src="{% static 'images/TenrrLogo.png' %}" alt="Tenrr Logo" id="logo">
+            <nav>
+                <ul>
+                    <li><a href="{% url 'tenrr:search' %}">SEARCH</a></li>
+                    <li><a href="{% url 'tenrr:about' %}">ABOUT</a></li>
+                    <li><a href="{% url 'tenrr:recommendations' %}">RECOMMENDATIONS</a></li>
+                    <li><a href="{% url 'tenrr:login' %}">LOGIN</a></li>
+                    <li><a href="{% url 'tenrr:signup' %}">SIGN UP</a></li>
+                </ul>
+            </nav>
+        </div>
     </header>
 
     <main>
-        <h1>Browse various freelancers and their services</h1>
-        <!-- Search form -->
-        <form action="{% url 'tenrr:search' %}" method="get">
-            <input type="text" name="query" placeholder="search">
-            <button type="submit">Search</button>
-        </form>
+        <div class="hero">
+            <h1>Browse various freelancers and their services</h1>
+            <form action="{% url 'tenrr:search' %}" method="get" class="search-form">
+                <input type="text" name="query" placeholder="Search services or freelancers">
+                <button type="submit">Search</button>
+            </form>
+        </div>
 
-        <!-- Category buttons -->
-        <section id="categories">
-            <h2>Popular Categories:</h2>
-            <div>
-                <!-- Replace '#' with the actual URL to the search page with category filter -->
-                <a href="#">category 1</a>
-                <a href="#">category 2</a>
-                <a href="#">category 3</a>
-                <a href="#">category 4</a>
+        <section id="categories" class="container">
+            <h2>Popular Categories</h2>
+            <div class="categories-grid">
+                <a href="#">Graphic Design</a>
+                <a href="#">Digital Marketing</a>
+                <a href="#">Writing & Translation</a>
+                <a href="#">Video & Animation</a>
             </div>
         </section>
     </main>
 
     <footer>
-        <p>&copy; 2024 Tenrr</p>
+        <div class="container">
+            <p>&copy; 2024 Tenrr - All Rights Reserved</p>
+            <div class="social-icons">
+                <!-- Consider adding social media icons here for enhanced connectivity -->
+            </div>
+        </div>
     </footer>
 
-    <!-- Add any additional JS files here -->
     <script src="{% static 'js/script.js' %}"></script>
 </body>
 
