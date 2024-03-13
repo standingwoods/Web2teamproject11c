@@ -1,32 +1,6 @@
-{% load static %}
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Tenrr - Sign Up</title>
-    <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;500;700&display=swap" rel="stylesheet">
-    <link rel="stylesheet" href="{% static 'css/style.css' %}">
-</head>
-<body>
+{% extends 'tenrr/base.html' %}
 
-<header>
-    <div class="container">
-        <img src="{% static 'images/TenrrLogo.png' %}" alt="Tenrr Logo" id="logo">
-        <nav>
-            <ul>
-                <li><a href="{% url 'tenrr:index' %}">HOME</a></li>
-                <li><a href="{% url 'tenrr:search' %}">SEARCH</a></li>
-                <li><a href="{% url 'tenrr:about' %}">ABOUT</a></li>
-                <li><a href="{% url 'tenrr:recommendations' %}">RECOMMENDATIONS</a></li>
-                <li><a href="{% url 'tenrr:login' %}">LOGIN</a></li>
-                <li><a href="{% url 'tenrr:signup' %}">SIGN UP</a></li>
-            </ul>
-        </nav>
-    </div>
-</header>
-
-<main>
+{% block content %}
     <section class="hero">
         <div class="container">
             <h1>Join Tenrr</h1>
@@ -58,15 +32,4 @@
             </form>
         </div>
     </section>
-</main>
-
-<footer>
-    <div class="container">
-        <p>&copy; 2024 Tenrr - All Rights Reserved</p>
-        <!-- Add social media icons -->
-    </div>
-</footer>
-
-<script src="{% static 'js/script.js' %}"></script>
-</body>
-</html>
+{% endblock %}
