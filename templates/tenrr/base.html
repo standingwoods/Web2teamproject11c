@@ -27,6 +27,7 @@
                     <li><a href="{% url 'tenrr:recommendations' %}">RECOMMENDATIONS</a></li>
                     {% if user.is_authenticated %}
                         <li><a href="{% url 'tenrr:logout' %}">LOG OUT</a></li>
+                        <li><a href="{% url 'tenrr:edit_profile' %}"><img src="{% static 'images/edit-icon.png' %}" alt="Edit Profile" /></a></li>
                     {% else %}
                         <li><a href="{% url 'tenrr:login' %}">LOGIN</a></li>
                         <li><a href="{% url 'tenrr:signup' %}">SIGN UP</a></li>

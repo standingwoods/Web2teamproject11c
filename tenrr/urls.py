@@ -1,7 +1,6 @@
 from django.urls import path
 from tenrr import views
 
-
 app_name = 'tenrr'
 
 urlpatterns = [
@@ -12,4 +11,5 @@ urlpatterns = [
     path('login/', views.login_view, name='login'),
     path('signup/', views.signup_view, name='signup'),
     path('logout/', views.logout_view, name='logout'),
+    path('edit_profile/', views.edit_profile, name='edit_profile'),
 ]

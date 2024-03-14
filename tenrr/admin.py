@@ -1,6 +1,4 @@
-# from django.contrib import admin
-# from tenrr.models import UserProfile
-# # Register your models here.
+from django.contrib import admin
+from tenrr.models import UserProfile
 
-# admin.site.register(UserProfile)
-
+admin.site.register(UserProfile)
