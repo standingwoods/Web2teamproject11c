@@ -7,7 +7,9 @@ from django.contrib.auth import logout
 from django.contrib.auth.decorators import login_required
 from django.urls import reverse
 from tenrr.models import UserProfile
-from tenrr.forms import UserProfileForm
+from tenrr.forms import UserProfileForm, SkillForm, EndorsementForm  
+from tenrr.models import Skill
+
 
 # Signup view
 def signup_view(request):
@@ -66,10 +68,13 @@ def about(request):
     return render(request, 'tenrr/about.html', context=context_dict)
 
 def search(request):
+    context_dict = {'boldmessage': 'Search Page'}
     return render(request, 'tenrr/search.html', context=context_dict)
 
 def recommendations(request):
+    context_dict = {'boldmessage': 'Recommendations Page'}
     return render(request, 'tenrr/recommendations.html', context=context_dict)
+
 
 @login_required
 def edit_profile(request):
@@ -91,3 +96,25 @@ def edit_profile(request):
     else:
         form = UserProfileForm(initial={'username': user.username, 'email': user.email, 'user_type': user_profile.user_type, 'contact_info': user_profile.contact_info})
     return render(request, 'tenrr/edit_profile.html', {'form': form})
+
+
+def profile(request):
+    if request.method == 'POST':
+        skill_form = SkillForm(request.POST)
+        endorsement_form = EndorsementForm(request.POST)
+        if skill_form.is_valid():
+            skill_form.save()
+        if endorsement_form.is_valid():
+            endorsement = endorsement_form.save(commit=False)
+            endorsement.user = request.user  # Set the user to the current user
+            endorsement.save()
+        return redirect('profile')
+    else:
+        skill_form = SkillForm()
+        endorsement_form = EndorsementForm()
+        skills = Skill.objects.all()
+    return render(request, 'profiles/profile.html', {
+        'skill_form': skill_form,
+        'endorsement_form': endorsement_form,
+        'skills': skills,
+    })  

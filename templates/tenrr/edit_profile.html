@@ -4,10 +4,25 @@
 <section class="hero">
     <div class="container">
         <h1>Edit Profile</h1>
+        <!-- Profile Form -->
         <form method="post" action="{% url 'tenrr:edit_profile' %}">
             {% csrf_token %}
             {{ form.as_p }}
             <button type="submit" class="btn">Update</button>
+        </form>
+        <!-- Skill Addition Form -->
+        <h2>Add Skill</h2>
+        <form method="post" action="{% url 'tenrr:add_skill' %}">
+            {% csrf_token %}
+            {{ skill_form.as_p }}
+            <button type="submit" class="btn">Add Skill</button>
+        </form>
+        <!-- Endorsement Request Form -->
+        <h2>Request Endorsement</h2>
+        <form method="post" action="{% url 'tenrr:request_endorsement' %}">
+            {% csrf_token %}
+            {{ endorsement_form.as_p }}
+            <button type="submit" class="btn">Request Endorsement</button>
         </form>
     </div>
 </section>
