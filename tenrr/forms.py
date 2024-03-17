@@ -1,6 +1,7 @@
 from django import forms
 from django.contrib.auth.models import User
 from tenrr.models import UserProfile
+from .models import Post
 
 class UserProfileForm(forms.ModelForm):
     username = forms.CharField(max_length=128, help_text="Please enter your username.")
@@ -11,3 +12,9 @@ class UserProfileForm(forms.ModelForm):
     class Meta:
         model = User
         fields = ('username', 'email', 'user_type', 'contact_info')
+
+
+class PostForm(forms.ModelForm):
+    class Meta:
+        model = Post
+        fields = ['title', 'content', 'category', 'price']

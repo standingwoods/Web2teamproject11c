@@ -9,6 +9,8 @@ from django.urls import reverse
 from tenrr.models import UserProfile
 from tenrr.forms import UserProfileForm
 from django.contrib import messages
+from .forms import PostForm
+from .models import Post, Category
 
 # Signup view
 def signup_view(request):
@@ -72,15 +74,38 @@ def about(request):
     return render(request, 'tenrr/about.html', context=context_dict)
 
 def search(request):
-    return render(request, 'tenrr/search.html', context=context_dict)
+    query = request.GET.get('q', '')
+    category_id = request.GET.get('category', None)  
+    categories = Category.objects.all()  
+    posts = Post.objects.filter(content__icontains=query)
+
+
+    if category_id:
+        posts = posts.filter(category_id=category_id)
+
+    context = {
+        'posts': posts,
+        'categories': categories,
+        'selected_category_id': int(category_id) if category_id else None,
+    }
+    return render(request, 'tenrr/search.html', context)
 
 def recommendations(request):
     return render(request, 'tenrr/recommendations.html', context=context_dict)
 
 @login_required
 def post(request):
-    context_dict = {'boldmessage': 'post'}
-    return render(request, 'tenrr/post.html', context=context_dict)
+    if request.method == 'POST':
+        form = PostForm(request.POST)
+        if form.is_valid():
+            new_post = form.save(commit=False)
+            new_post.author = request.user
+            new_post.save()
+            return redirect('tenrr:post') 
+    else:
+        form = PostForm() 
+    
+    return render(request, 'tenrr/post.html', {'form': form})
 
 @login_required
 def edit_profile(request):
