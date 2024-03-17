@@ -1,0 +1,40 @@
+{% extends 'tenrr/base.html' %}
+{% block extra_css %}
+
+<style>
+    .posts-list {
+        display: grid;
+        grid-template-columns: repeat(2, 1fr);
+        grid-gap: 20px;
+    }
+    .post {
+        position: relative; 
+        border: 1px solid #ddd;
+        box-shadow: 0 2px 4px rgba(0,0,0,.1);
+        padding: 20px;
+        border-radius: 5px;
+    }
+</style>
+{% endblock %}
+{% block content %}
+<div class="container">
+    <h1>Recommended Posts</h1>
+    {% if login_prompt %}
+    <p>You must be logged in to view recommendations. <a href="{% url 'tenrr:login' %}">Log in</a></p>
+    {% else %}
+    <div class="posts-list">
+        {% for post in posts %}
+        <div class="post">
+            <h3>{{ post.title }}</h3>
+            <p>{{ post.content }}</p>
+            <p>Category: {{ post.category.name }}</p>
+            <p>Price: £{{ post.price }}</p>
+            <p>Posted by: {{ post.author.username }}</p>
+        </div>
+        {% empty %}
+        <p>No recommendations found.</p>
+        {% endfor %}
+    </div>
+    {% endif %}
+</div>
+{% endblock %}

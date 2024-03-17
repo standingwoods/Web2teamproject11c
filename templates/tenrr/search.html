@@ -2,11 +2,35 @@
 {% block extra_css %}
 
 <style>
-    .posts-list .post {
+    .posts-list {
+        display: grid;
+        grid-template-columns: repeat(2, 1fr);
+        grid-gap: 20px;
+    }
+    .post {
+        position: relative; 
         border: 1px solid #ddd;
+        box-shadow: 0 2px 4px rgba(0,0,0,.1);
         padding: 20px;
-        margin-bottom: 20px;
         border-radius: 5px;
+    }
+    .like-container {
+        position: absolute;
+        top: 10px;
+        right: 10px;
+        display: flex;
+        align-items: center;
+    }
+    .heart-btn {
+        font-size: 24px;
+        background: none;
+        border: none;
+        cursor: pointer;
+        color: black; 
+        margin-right: 5px; 
+    }
+    .heart-btn.liked {
+        color: red; 
     }
 </style>
 {% endblock %}
@@ -23,6 +47,8 @@
             </option>
             {% endfor %}
         </select>
+        <input type="number" name="min_price" placeholder="Min Price" value="{{ request.GET.min_price }}">
+        <input type="number" name="max_price" placeholder="Max Price" value="{{ request.GET.max_price }}">
         <button type="submit">Search</button>
     </form>
 
@@ -34,10 +60,60 @@
             <p>Category: {{ post.category.name }}</p>
             <p>Price: £{{ post.price }}</p>
             <p>Posted by: {{ post.author.username }}</p>
+            <div class="like-container">
+                <button onclick="likePost({{ post.id }})" class="heart-btn {% if post.user_has_liked %}liked{% endif %}">❤</button>
+                <span id="likes-count-{{ post.id }}">{{ post.likes.count }}</span>
+            </div>
         </div>
         {% empty %}
         <p>No posts found.</p>
         {% endfor %}
     </div>
 </div>
+{% endblock %}
+{% block extra_js %}
+<script>
+    function getCsrfToken() {
+        return document.querySelector('meta[name="csrf-token"]').getAttribute('content');
+    }
+
+    function likePost(postId) {
+        const csrfToken = getCsrfToken();
+        fetch(`/tenrr/like_post/${postId}/`, {
+            method: 'POST',
+            headers: {
+                'X-CSRFToken': csrfToken,
+                'Content-Type': 'application/json',
+            },
+        })
+        .then(response => {
+            if (!response.ok) {
+                if (response.status === 403) {
+                    throw new Error('Please sign in to like a post');
+                } else {
+                    throw new Error('Network response was not ok');
+                }
+            }
+            return response.json();
+        })
+        .then(data => {
+            if (data.error) {
+                throw new Error(data.error);
+            }
+            
+            document.getElementById(`likes-count-${postId}`).innerText = data.likes_count;
+            
+            const button = document.querySelector(`button[onclick='likePost(${postId})']`);
+            if (data.liked) {
+                button.classList.add('liked');
+            } else {
+                button.classList.remove('liked');
+            }
+        })
+        .catch(error => {
+            console.error('Error:', error);
+            alert(error.message);
+        });
+    }
+</script>
 {% endblock %}

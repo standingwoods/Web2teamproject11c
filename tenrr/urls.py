@@ -1,5 +1,6 @@
 from django.urls import path
 from tenrr import views
+from .views import like_post
 
 app_name = 'tenrr'
 
@@ -13,4 +14,5 @@ urlpatterns = [
     path('signup/', views.signup_view, name='signup'),
     path('logout/', views.logout_view, name='logout'),
     path('edit_profile/', views.edit_profile, name='edit_profile'),
+    path('like_post/<int:post_id>/', views.like_post, name='like_post'),
 ]
