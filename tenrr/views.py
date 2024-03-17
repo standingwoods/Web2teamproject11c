@@ -11,6 +11,11 @@ from tenrr.forms import UserProfileForm
 from django.contrib import messages
 from .forms import PostForm
 from .models import Post, Category
+from django.http import JsonResponse
+from django.views.decorators.http import require_POST
+from .models import Post, Like
+from django.db.models import Exists, OuterRef
+from django.db.models import Count, Q
 
 # Signup view
 def signup_view(request):
@@ -20,7 +25,7 @@ def signup_view(request):
         email = request.POST['email']
         password = request.POST['password']
         confirm_password = request.POST['confirm-password']
-        user_type = request.POST.get('user_type', 'Buyer')  # Default to 'Buyer' if not provided
+        user_type = request.POST.get('user_type', 'Buyer')
 
         if password == confirm_password:
             try:
@@ -28,9 +33,7 @@ def signup_view(request):
                 user.save()
                 user_profile = UserProfile(user=user, user_type=user_type)
                 user_profile.save()
-                # Optional: log the user in directly
-                # login(request, user)
-                return redirect('tenrr:login')  # This line seems correct. Ensure 'tenrr:login' is correctly defined in your urls.py
+                return redirect('tenrr:login') 
             except:
                 messages.error(request, "Error creating user. Please try again.")
         else:
@@ -45,15 +48,12 @@ def login_view(request):
         password = request.POST.get('password')
         user = authenticate(request, username=username, password=password)
         if user is not None:
-            auth_login(request, user)  # Use the renamed login function
-            # Redirect to a success page or the 'next' parameter URL.
-            next_url = request.GET.get('next', 'tenrr:index')  # 'tenrr:index' as default
+            auth_login(request, user)
+            next_url = request.GET.get('next', 'tenrr:index') 
             return redirect(next_url)
         else:
             messages.error(request, "Invalid login details.")
     else:
-        # If there's a 'next' parameter, it means the user was redirected here
-        # because they tried to access a login-required page.
         if 'next' in request.GET:
             messages.info(request, 'To make a post you must login.')
 
@@ -62,7 +62,6 @@ def login_view(request):
 @login_required
 def logout_view(request):
     logout(request)
-    # Redirect to the homepage or another appropriate page after logging out
     return redirect(reverse('tenrr:index'))
 
 def index(request):
@@ -75,13 +74,24 @@ def about(request):
 
 def search(request):
     query = request.GET.get('q', '')
-    category_id = request.GET.get('category', None)  
-    categories = Category.objects.all()  
-    posts = Post.objects.filter(content__icontains=query)
+    category_id = request.GET.get('category', None)
+    min_price = request.GET.get('min_price', None)
+    max_price = request.GET.get('max_price', None)
+    categories = Category.objects.all()
 
+    posts = Post.objects.all()
 
+    if query:
+        posts = posts.filter(content__icontains=query)
+    
     if category_id:
         posts = posts.filter(category_id=category_id)
+    
+    if min_price:
+        posts = posts.filter(price__gte=min_price)
+    
+    if max_price:
+        posts = posts.filter(price__lte=max_price)
 
     context = {
         'posts': posts,
@@ -90,8 +100,34 @@ def search(request):
     }
     return render(request, 'tenrr/search.html', context)
 
+def search_view(request):
+    user = request.user
+    posts = Post.objects.all()
+
+    category_id = request.GET.get('category', None)
+    if category_id is not None:
+        posts = posts.filter(category_id=category_id)
+
+    if request.user.is_authenticated:
+        likes_subquery = Like.objects.filter(user=request.user, post_id=OuterRef('pk'))
+        posts = posts.annotate(user_has_liked=Exists(likes_subquery))
+    else:
+        posts = posts.annotate(user_has_liked=False)
+
+    context = {'posts': posts}
+    return render(request, 'search.html', context)
+
+
 def recommendations(request):
-    return render(request, 'tenrr/recommendations.html', context=context_dict)
+    if request.user.is_authenticated:
+        user = request.user
+        liked_categories = Post.objects.filter(likes__user=user).values_list('category', flat=True).distinct()
+        recommended_posts = Post.objects.filter(category__in=liked_categories).exclude(likes__user=user).annotate(likes_count=Count('likes')).order_by('-likes_count')[:10]
+        return render(request, 'tenrr/recommendations.html', {'posts': recommended_posts})
+    else:
+        return render(request, 'tenrr/recommendations.html', {'login_prompt': True})
+
+
 
 @login_required
 def post(request):
@@ -101,10 +137,10 @@ def post(request):
             new_post = form.save(commit=False)
             new_post.author = request.user
             new_post.save()
-            return redirect('tenrr:post') 
+            messages.success(request, 'Thank you for making a post')
+            return redirect('tenrr:post')
     else:
-        form = PostForm() 
-    
+        form = PostForm()
     return render(request, 'tenrr/post.html', {'form': form})
 
 @login_required
@@ -127,3 +163,30 @@ def edit_profile(request):
     else:
         form = UserProfileForm(initial={'username': user.username, 'email': user.email, 'user_type': user_profile.user_type, 'contact_info': user_profile.contact_info})
     return render(request, 'tenrr/edit_profile.html', {'form': form})
+
+def ajax_login_required(view_func):
+    def _wrapped_view(request, *args, **kwargs):
+        if not request.user.is_authenticated:
+            return JsonResponse({'error': 'Please sign in to like a post'}, status=403)
+        return view_func(request, *args, **kwargs)
+    return _wrapped_view
+
+
+@ajax_login_required
+@require_POST
+@login_required
+def like_post(request, post_id):
+    post = Post.objects.get(id=post_id)
+    liked = False  
+    like, created = Like.objects.get_or_create(post=post, user=request.user)
+    
+    if not created:
+        like.delete()
+    else:
+        liked = True
+
+    return JsonResponse({
+        'likes_count': post.likes.count(),
+        'liked': liked
+    })
+
