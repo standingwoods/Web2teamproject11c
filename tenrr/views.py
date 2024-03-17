@@ -8,6 +8,7 @@ from django.contrib.auth.decorators import login_required
 from django.urls import reverse
 from tenrr.models import UserProfile
 from tenrr.forms import UserProfileForm
+from django.contrib import messages
 
 # Signup view
 def signup_view(request):
@@ -38,17 +39,22 @@ def signup_view(request):
 def login_view(request):
     context_dict = {'boldmessage': 'login'}
     if request.method == "POST":
-        username = request.POST['username']
-        password = request.POST['password']
+        username = request.POST.get('username')
+        password = request.POST.get('password')
         user = authenticate(request, username=username, password=password)
         if user is not None:
             auth_login(request, user)  # Use the renamed login function
-            # Redirect to a success page.
-            return redirect('tenrr:index')  # Corrected to include the 'tenrr' namespace
+            # Redirect to a success page or the 'next' parameter URL.
+            next_url = request.GET.get('next', 'tenrr:index')  # 'tenrr:index' as default
+            return redirect(next_url)
         else:
-            # Return an 'invalid login' error message.
-            pass
-    # If GET request or other conditions, render your login form template
+            messages.error(request, "Invalid login details.")
+    else:
+        # If there's a 'next' parameter, it means the user was redirected here
+        # because they tried to access a login-required page.
+        if 'next' in request.GET:
+            messages.info(request, 'To make a post you must login.')
+
     return render(request, 'tenrr/login.html', context=context_dict)
 
 @login_required
@@ -70,6 +76,11 @@ def search(request):
 
 def recommendations(request):
     return render(request, 'tenrr/recommendations.html', context=context_dict)
+
+@login_required
+def post(request):
+    context_dict = {'boldmessage': 'post'}
+    return render(request, 'tenrr/post.html', context=context_dict)
 
 @login_required
 def edit_profile(request):

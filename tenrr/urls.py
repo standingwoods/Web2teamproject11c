@@ -5,6 +5,7 @@ app_name = 'tenrr'
 
 urlpatterns = [
     path('', views.index, name='index'),
+    path('post/', views.post, name='post'),
     path('search/', views.search, name='search'),
     path('about/', views.about, name='about'),
     path('recommendations/', views.recommendations, name='recommendations'),
