@@ -12,6 +12,15 @@
 
     <section class="login-form">
         <div class="container">
+            <!-- Display messages from Django's messaging framework here -->
+            {% if messages %}
+                <div class="messages">
+                    {% for message in messages %}
+        <!-- Display each message on a new line and make it bold -->
+                        <h2><strong>{{ message }}</strong></h2>
+                    {% endfor %}
+                </div>
+            {% endif %}
             <form method="post" action="{% url 'tenrr:login' %}">
                 {% csrf_token %}
                 <div class="form-group">

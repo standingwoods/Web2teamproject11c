@@ -1,0 +1,41 @@
+{% extends 'tenrr/base.html' %}
+
+{% block title %}Post{% endblock %}
+
+{% block content %}
+<div class="container">
+    <h1>Make a post</h1>
+    <form method="post">
+        {% csrf_token %}
+        <div>
+            {{ form.title.label_tag }}<br>
+            {{ form.title }}
+            {% if form.title.errors %}
+                <div class="errors">{{ form.title.errors.as_text }}</div>
+            {% endif %}
+        </div>
+        <div>
+            {{ form.content.label_tag }}<br>
+            {{ form.content }}
+            {% if form.content.errors %}
+                <div class="errors">{{ form.content.errors.as_text }}</div>
+            {% endif %}
+        </div>
+        <div>
+            {{ form.category.label_tag }}<br>
+            {{ form.category }}
+            {% if form.category.errors %}
+                <div class="errors">{{ form.category.errors.as_text }}</div>
+            {% endif %}
+        </div>
+        <div>
+            {{ form.price.label_tag }}<br>
+            {{ form.price }}
+            {% if form.price.errors %}
+                <div class="errors">{{ form.price.errors.as_text }}</div>
+            {% endif %}
+        </div>
+        <button type="submit">Submit</button>
+    </form>
+</div>
+{% endblock %}

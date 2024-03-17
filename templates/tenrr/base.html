@@ -22,6 +22,9 @@
                     <a href="{% url 'tenrr:index' %}">
                         <img src="{% static 'images/TenrrLogo.png' %}" alt="Tenrr Logo" id="logo" style="margin-right: 600px;">
                     </a>
+                    {% if user.is_authenticated and user.userprofile.user_type == 'Seller' %}
+                        <li><a href="{% url 'tenrr:post' %}">POST</a></li>
+                    {% endif %}
                     <li><a href="{% url 'tenrr:search' %}">SEARCH</a></li>
                     <li><a href="{% url 'tenrr:about' %}">ABOUT</a></li>
                     <li><a href="{% url 'tenrr:recommendations' %}">RECOMMENDATIONS</a></li>

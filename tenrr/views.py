@@ -8,6 +8,9 @@ from django.contrib.auth.decorators import login_required
 from django.urls import reverse
 from tenrr.models import UserProfile
 from tenrr.forms import UserProfileForm
+from django.contrib import messages
+from .forms import PostForm
+from .models import Post, Category
 
 # Signup view
 def signup_view(request):
@@ -38,17 +41,22 @@ def signup_view(request):
 def login_view(request):
     context_dict = {'boldmessage': 'login'}
     if request.method == "POST":
-        username = request.POST['username']
-        password = request.POST['password']
+        username = request.POST.get('username')
+        password = request.POST.get('password')
         user = authenticate(request, username=username, password=password)
         if user is not None:
             auth_login(request, user)  # Use the renamed login function
-            # Redirect to a success page.
-            return redirect('tenrr:index')  # Corrected to include the 'tenrr' namespace
+            # Redirect to a success page or the 'next' parameter URL.
+            next_url = request.GET.get('next', 'tenrr:index')  # 'tenrr:index' as default
+            return redirect(next_url)
         else:
-            # Return an 'invalid login' error message.
-            pass
-    # If GET request or other conditions, render your login form template
+            messages.error(request, "Invalid login details.")
+    else:
+        # If there's a 'next' parameter, it means the user was redirected here
+        # because they tried to access a login-required page.
+        if 'next' in request.GET:
+            messages.info(request, 'To make a post you must login.')
+
     return render(request, 'tenrr/login.html', context=context_dict)
 
 @login_required
@@ -66,10 +74,38 @@ def about(request):
     return render(request, 'tenrr/about.html', context=context_dict)
 
 def search(request):
-    return render(request, 'tenrr/search.html', context=context_dict)
+    query = request.GET.get('q', '')
+    category_id = request.GET.get('category', None)  
+    categories = Category.objects.all()  
+    posts = Post.objects.filter(content__icontains=query)
+
+
+    if category_id:
+        posts = posts.filter(category_id=category_id)
+
+    context = {
+        'posts': posts,
+        'categories': categories,
+        'selected_category_id': int(category_id) if category_id else None,
+    }
+    return render(request, 'tenrr/search.html', context)
 
 def recommendations(request):
     return render(request, 'tenrr/recommendations.html', context=context_dict)
+
+@login_required
+def post(request):
+    if request.method == 'POST':
+        form = PostForm(request.POST)
+        if form.is_valid():
+            new_post = form.save(commit=False)
+            new_post.author = request.user
+            new_post.save()
+            return redirect('tenrr:post') 
+    else:
+        form = PostForm() 
+    
+    return render(request, 'tenrr/post.html', {'form': form})
 
 @login_required
 def edit_profile(request):
