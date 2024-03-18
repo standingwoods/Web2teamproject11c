@@ -1,4 +1,4 @@
-from django.shortcuts import render, redirect
+from django.shortcuts import render, redirect, get_object_or_404
 from django.http import HttpResponse
 from django.contrib.auth import authenticate, login as auth_login
 from django.contrib.auth.models import User
@@ -16,6 +16,21 @@ from django.views.decorators.http import require_POST
 from .models import Post, Like
 from django.db.models import Exists, OuterRef
 from django.db.models import Count, Q
+from .models import Category
+
+@login_required
+def my_profile(request):
+    user_profile, created = UserProfile.objects.get_or_create(user=request.user)
+    user_posts = Post.objects.filter(author=request.user).order_by('-created_date') 
+    
+    context = {
+        'user': request.user,
+        'user_profile': user_profile,
+        'user_posts': user_posts,
+    }
+    return render(request, 'tenrr/my_profile.html', context)
+
+
 
 # Signup view
 def signup_view(request):
@@ -65,8 +80,10 @@ def logout_view(request):
     return redirect(reverse('tenrr:index'))
 
 def index(request):
-    context_dict = {'boldmessage': 'happy'}
+    categories = Category.objects.all() 
+    context_dict = {'boldmessage': 'happy', 'categories': categories}
     return render(request, 'tenrr/index.html', context=context_dict)
+
 
 def about(request):
     context_dict = {'boldmessage': 'about'}
@@ -157,7 +174,7 @@ def edit_profile(request):
             user_profile.contact_info = form.cleaned_data['contact_info']
             user_profile.save()
             messages.success(request, 'Your profile was successfully updated!')
-            return redirect('tenrr:index')
+            return redirect('tenrr:my_profile')
         else:
             messages.error(request, 'Please correct the error below.')
     else:
@@ -190,3 +207,9 @@ def like_post(request, post_id):
         'liked': liked
     })
 
+@login_required
+@require_POST
+def delete_post(request, post_id):
+    post = get_object_or_404(Post, id=post_id, author=request.user) 
+    post.delete()
+    return redirect('tenrr:my_profile')
