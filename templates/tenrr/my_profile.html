@@ -14,12 +14,12 @@
     .profile-info, .your-posts {
         margin-bottom: 20px;
     }
-    .posts-list {
+    .posts-list, .sales-list {
         display: grid;
         grid-template-columns: repeat(2, 1fr);
         grid-gap: 20px;
     }
-    .post {
+    .post, .purchase, .sale {
         position: relative; 
         border: 1px solid #ddd;
         box-shadow: 0 2px 4px rgba(0,0,0,.1);
@@ -40,6 +40,16 @@
         <p><strong>Email:</strong> {{ user.email }}</p>
         <p><strong>User Type:</strong> {{ user_profile.user_type }}</p>
         <p><strong>Contact Info:</strong> {{ user_profile.contact_info }}</p>
+        <p><strong>Balance:</strong> £{{ user_profile.balance }}</p>
+        <!-- Form to add funds -->
+        <form action="{% url 'tenrr:add_funds' %}" method="post">
+            {% csrf_token %}
+            <div class="form-group">
+                <label for="amount">Add Funds (£):</label>
+                <input type="number" id="amount" name="amount" min="1" step="1" required>
+                <button type="submit" class="btn btn-success">Add</button>
+            </div>
+        </form>
     </div>
     <div class="your-posts">
         <h2>Your Posts</h2>
@@ -48,9 +58,9 @@
                 {% for post in user_posts %}
                     <div class="post">
                         <h3>{{ post.title }}</h3>
-                        <p>{{ post.content}}</p>
-                        <p>{{ post.category}}</p>
-                        <p>£{{ post.price}}</p>
+                        <p>{{ post.content }}</p>
+                        <p>{{ post.category }}</p>
+                        <p>£{{ post.price }}</p>
                         <form action="{% url 'tenrr:delete_post' post.id %}" method="post" style="display: inline;">
                             {% csrf_token %}
                             <button type="submit" class="btn btn-danger" onclick="return confirm('Are you sure you want to delete this post?');">Delete</button>
@@ -60,6 +70,41 @@
             </div>
         {% else %}
             <p>You haven't posted anything yet.</p>
+        {% endif %}
+    </div>
+    <div class="past-purchases">
+        <h2>Past Purchases</h2>
+        {% if purchased_posts %}
+            <div class="posts-list">
+                {% for purchase in purchased_posts %}
+                    <div class="purchase">
+                        <h3>{{ purchase.post.title }}</h3>
+                        <p>{{ purchase.post.content }}</p>
+                        <p>£{{ purchase.post.price }}</p>
+                        <p>By:{{ purchase.post.author }}</p>
+                    </div>
+                {% endfor %}
+            </div>
+        {% else %}
+            <p>You haven't purchased anything yet.</p>
+        {% endif %}
+    </div>
+    <div class="your-sales">
+        <h2>Your Sales</h2>
+        {% if sales %}
+            <div class="sales-list">
+                {% for sale in sales %}
+                    <div class="sale">
+                        <h3>{{ sale.post.title }}</h3>
+                        <p>{{ sale.post.content }}</p>
+                        <p>Bought by: {{ sale.user.username }}</p>
+                        <p>Note: {{ sale.buyer_note }}</p>
+                        <p>Price: £{{ sale.post.price }}</p>
+                    </div>
+                {% endfor %}
+            </div>
+        {% else %}
+            <p>You haven't sold anything yet.</p>
         {% endif %}
     </div>
 </div>

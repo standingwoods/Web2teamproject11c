@@ -13,23 +13,30 @@ from .forms import PostForm
 from .models import Post, Category
 from django.http import JsonResponse
 from django.views.decorators.http import require_POST
-from .models import Post, Like
+from .models import Post, Like, Purchase
 from django.db.models import Exists, OuterRef
 from django.db.models import Count, Q
 from .models import Category
+from django.db import transaction
+from decimal import Decimal
 
 @login_required
 def my_profile(request):
     user_profile, created = UserProfile.objects.get_or_create(user=request.user)
-    user_posts = Post.objects.filter(author=request.user).order_by('-created_date') 
-    
+    user_posts = Post.objects.filter(author=request.user).order_by('-created_date')
+    purchased_posts = Purchase.objects.filter(user=request.user).order_by('-purchase_date')
+    sold_posts = Post.objects.filter(author=request.user, purchased_by__isnull=False).distinct()
+    sales = Purchase.objects.filter(post__author=request.user).select_related('user', 'post').order_by('-purchase_date')
+
     context = {
         'user': request.user,
         'user_profile': user_profile,
         'user_posts': user_posts,
+        'purchased_posts': purchased_posts,
+        'sold_posts': sold_posts,
+        'sales': sales,
     }
     return render(request, 'tenrr/my_profile.html', context)
-
 
 
 # Signup view
@@ -213,3 +220,54 @@ def delete_post(request, post_id):
     post = get_object_or_404(Post, id=post_id, author=request.user) 
     post.delete()
     return redirect('tenrr:my_profile')
+
+def buy_post(request, post_id):
+    post = get_object_or_404(Post, id=post_id)
+    return render(request, 'tenrr/buy_post.html', {'post': post})
+
+
+@login_required
+def confirm_purchase(request, post_id):
+    if request.method == 'POST': 
+        post = get_object_or_404(Post, id=post_id)
+        user_profile = get_object_or_404(UserProfile, user=request.user)
+        seller_profile = get_object_or_404(UserProfile, user=post.author)
+        buyer_note = request.POST.get('buyer_note', '')
+
+        if user_profile.balance < post.price:
+            messages.error(request, "You do not have enough balance to make this purchase.")
+            return redirect('tenrr:post_detail', post_id=post.id)
+
+        with transaction.atomic():
+            user_profile.balance -= Decimal(post.price)
+            user_profile.save()
+
+            seller_profile.balance += Decimal(post.price)
+            seller_profile.save()
+
+            Purchase.objects.create(user=request.user, post=post, buyer_note=buyer_note)
+
+            messages.success(request, "Purchase successful! The cost has been deducted from your balance. You can view your purchased items in My Profile.")
+
+        return redirect('tenrr:my_profile')
+    else:
+        return redirect('tenrr:my_profile', post_id=post_id)
+
+@login_required
+def add_funds(request):
+    if request.method == 'POST':
+        amount = request.POST.get('amount')
+        try:
+            amount = Decimal(amount)
+            if amount > 0:
+                user_profile = UserProfile.objects.get(user=request.user)
+                user_profile.balance += amount
+                user_profile.save()
+                messages.success(request, f'£{amount} added to your balance.')
+            else:
+                messages.error(request, 'Invalid amount.')
+        except ValueError:
+            messages.error(request, 'Invalid amount.')
+        return redirect('tenrr:my_profile')
+    else:
+        return redirect('tenrr:my_profile')
