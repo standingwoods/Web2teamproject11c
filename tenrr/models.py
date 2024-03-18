@@ -1,6 +1,7 @@
 from django.db import models
 from django.contrib.auth.models import User
 from django.utils import timezone
+from django.conf import settings
 
 class UserProfile(models.Model):
     user = models.OneToOneField(User, on_delete=models.CASCADE)
@@ -10,6 +11,7 @@ class UserProfile(models.Model):
     )
     user_type = models.CharField(max_length=6, choices=USER_TYPE_CHOICES, default='Buyer')
     contact_info = models.TextField(blank=True, null=True)
+    balance = models.DecimalField(max_digits=10, decimal_places=2, default=100.00)
 
     def __str__(self):
         return self.user.username
@@ -38,3 +40,12 @@ class Like(models.Model):
 
     class Meta:
         unique_together = ('post', 'user')
+
+class Purchase(models.Model):
+    user = models.ForeignKey(settings.AUTH_USER_MODEL, related_name='purchases', on_delete=models.CASCADE)
+    post = models.ForeignKey('Post', related_name='purchased_by', on_delete=models.CASCADE)
+    purchase_date = models.DateTimeField(default=timezone.now)
+    buyer_note = models.TextField(blank=True, null=True)
+
+    def __str__(self):
+        return f'{self.user.username} purchased {self.post.title}'

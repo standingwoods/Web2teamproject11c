@@ -18,4 +18,7 @@ urlpatterns = [
     path('like_post/<int:post_id>/', views.like_post, name='like_post'),
     path('my_profile/', views.my_profile, name='my_profile'),
     path('delete_post/<int:post_id>/', views.delete_post, name='delete_post'),
+    path('buy_post/<int:post_id>/', views.buy_post, name='buy_post'),
+    path('confirm_purchase/<int:post_id>/', views.confirm_purchase, name='confirm_purchase'),
+    path('add_funds/', views.add_funds, name='add_funds'),
 ]
