@@ -14,10 +14,9 @@
     <section id="categories" class="container">
         <h2>Popular Categories</h2>
         <div class="categories-grid">
-            <a href="#">Graphic Design</a>
-            <a href="#">Digital Marketing</a>
-            <a href="#">Writing & Translation</a>
-            <a href="#">Video & Animation</a>
+            {% for category in categories %}
+                <a href="{% url 'tenrr:search' %}?category={{ category.id }}">{{ category.name }}</a>
+            {% endfor %}
         </div>
     </section>
 {% endblock %}
