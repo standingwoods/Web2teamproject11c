@@ -1,0 +1,28 @@
+{% extends 'tenrr/base.html' %}
+{% block title %}Media{% endblock %}
+{% block content %}
+<div class="container">
+    <h1>What you bought!</h1>
+    {% for media in media_files %}
+    <div>
+        {% with file_ext=media.file.url|cut:"."|last %}
+            {% if file_ext|lower in "jpg,jpeg,png,gif" %}
+                <img src="{{ media.file.url }}" alt="Image" style="max-width: 100%; height: auto;">
+            {% elif file_ext|lower in "mp4,mov" %}
+                <video width="320" height="240" controls>
+                    <source src="{{ media.file.url }}" type="video/mp4">
+                    Your browser does not support the video tag.
+                </video>
+            {% elif file_ext|lower in "mp3,wav" %}
+                <audio controls>
+                    <source src="{{ media.file.url }}" type="audio/mpeg">
+                    Your browser does not support the audio element.
+                </audio>
+            {% else %}
+                <a href="{{ media.file.url }}">Download file</a>
+            {% endif %}
+        {% endwith %}
+    </div>
+    {% endfor %}
+</div>
+{% endblock %}

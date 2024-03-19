@@ -1,0 +1,58 @@
+{% extends 'tenrr/base.html' %}
+{% block title %}Complete Sale{% endblock %}
+{% block extra_css %}
+<style>
+    .sale-container {
+        display: flex;
+        gap: 20px;
+    }
+    .post-container {
+        flex: 1;
+        border: 1px solid #ddd;
+        box-shadow: 0 2px 4px rgba(0,0,0,.1);
+        padding: 20px;
+        border-radius: 5px;
+        display: flex;
+        flex-direction: column;
+    }
+    .confirm-sale-btn-container {
+        text-align: center;
+        margin-top: 20px;
+    }
+    .confirm-sale-btn {
+        padding: 10px 20px;
+        background-color: #4CAF50;
+        color: white;
+        border: none;
+        border-radius: 5px;
+        cursor: pointer;
+        font-size: 18px;
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="container">
+    <form method="post" action="{% url 'tenrr:confirm_complete_sale' purchase.id %}" enctype="multipart/form-data">
+        {% csrf_token %}
+        <h1>Complete Sale:</h1>
+        <div class="sale-container">
+            <div class="post-container">
+                <h4>{{ purchase.post.title }}</h4>
+                <p>{{ purchase.post.content }}</p>
+                <p>Price: £{{ purchase.post.price }}</p>
+                <p>Bought by: {{ purchase.user.username }}</p>
+                <p>Note: {{ purchase.buyer_note }}</p>
+            </div>
+        </div>
+        <div class="form-group">
+            <label for="purchase_media">Upload files:</label>
+            <input type="file" id="purchase_media" name="purchase_media" multiple style="display: block; margin-bottom: 20px;">
+        </div>
+        <div class="confirm-sale-btn-container">
+            <button type="submit" class="confirm-sale-btn">Confirm Sale</button>
+            <a href="{% url 'tenrr:my_profile' %}" class="btn btn-secondary" style="margin-left: 10px;">Cancel</a>
+        </div>
+    </form>
+</div>
+{% endblock %}

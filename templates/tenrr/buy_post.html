@@ -4,7 +4,7 @@
 <style>
     .buy-container {
         display: flex;
-        gap: 20px; 
+        gap: 20px;
     }
     .post-container, .details-container {
         flex: 1;
@@ -19,47 +19,50 @@
         margin-bottom: 10px;
     }
     .details-container textarea {
-        flex-grow: 1; 
+        flex-grow: 1;
         margin-top: 10px;
         border-radius: 5px;
-        border: 1px solid #ccc; 
+        border: 1px solid #ccc;
         padding: 8px;
         width: 100%;
-        box-sizing: border-box; 
+        box-sizing: border-box;
+    }
+    .confirm-purchase-btn-container {
+        text-align: center; 
+        margin-top: 20px; 
     }
     .confirm-purchase-btn {
-        display: block;
-        width: fit-content;
         padding: 10px 20px;
-        margin: 20px auto 0; /* Center the button and add space above */
         background-color: #4CAF50;
         color: white;
         border: none;
         border-radius: 5px;
         cursor: pointer;
+        font-size: 18px; 
     }
 </style>
 {% endblock %}
 
 {% block content %}
 <div class="container">
-    <h1>Buy Post:</h1>
-    <div class="buy-container">
-        <div class="post-container">
-            <h4>{{ post.title }}</h4>
-            <p>{{ post.content }}</p>
-            <p>Price: £{{ post.price }}</p>
-            <p>Posted by: {{ post.author.username }}</p>
-        </div>
-        <div class="details-container">
-            <h4 class="details-header">Enter any notes to seller:</h4>
-            <textarea placeholder="Your notes here..."></textarea>
-        </div>
-    </div>
     <form method="post" action="{% url 'tenrr:confirm_purchase' post.id %}">
         {% csrf_token %}
-        <textarea name="buyer_note" placeholder="Add any notes for the seller here"></textarea>
-        <button type="submit">Confirm Purchase</button>
+        <h1>Buy Post:</h1>
+        <div class="buy-container">
+            <div class="post-container">
+                <h4>{{ post.title }}</h4>
+                <p>{{ post.content }}</p>
+                <p>Price: £{{ post.price }}</p>
+                <p>Posted by: {{ post.author.username }}</p>
+            </div>
+            <div class="details-container">
+                <h4 class="details-header">Enter any notes to seller:</h4>
+                <textarea name="buyer_note" placeholder="Add any notes for the seller here" style="height: 100%;"></textarea>
+            </div>
+        </div>
+        <div class="confirm-purchase-btn-container">
+            <button type="submit" class="confirm-purchase-btn">Confirm Purchase</button>
+        </div>
     </form>
 </div>
 {% endblock %}

@@ -82,12 +82,16 @@
                         <p>{{ purchase.post.content }}</p>
                         <p>£{{ purchase.post.price }}</p>
                         <p>By:{{ purchase.post.author }}</p>
+                        <p>Status: {% if purchase.is_complete %}Complete{% else %}Pending{% endif %}</p>
+                        {% if purchase.is_complete %}
+                            <a href="{% url 'tenrr:view_sale_media' purchase.id %}">View Media</a>
+                        {% endif %}
                     </div>
                 {% endfor %}
             </div>
         {% else %}
             <p>You haven't purchased anything yet.</p>
-        {% endif %}
+        {% endif %}    
     </div>
     <div class="your-sales">
         <h2>Your Sales</h2>
@@ -100,6 +104,10 @@
                         <p>Bought by: {{ sale.user.username }}</p>
                         <p>Note: {{ sale.buyer_note }}</p>
                         <p>Price: £{{ sale.post.price }}</p>
+                        <!-- Complete Sale Button -->
+                        <form action="{% url 'tenrr:complete_sale_page' sale.id %}" method="get">
+                            <button type="submit" class="btn btn-primary">Complete Sale</button>
+                        </form>
                     </div>
                 {% endfor %}
             </div>

@@ -16,7 +16,7 @@ from django.views.decorators.http import require_POST
 from .models import Post, Like, Purchase
 from django.db.models import Exists, OuterRef
 from django.db.models import Count, Q
-from .models import Category
+from .models import Category, PurchaseMedia
 from django.db import transaction
 from decimal import Decimal
 
@@ -24,20 +24,17 @@ from decimal import Decimal
 def my_profile(request):
     user_profile, created = UserProfile.objects.get_or_create(user=request.user)
     user_posts = Post.objects.filter(author=request.user).order_by('-created_date')
-    purchased_posts = Purchase.objects.filter(user=request.user).order_by('-purchase_date')
-    sold_posts = Post.objects.filter(author=request.user, purchased_by__isnull=False).distinct()
-    sales = Purchase.objects.filter(post__author=request.user).select_related('user', 'post').order_by('-purchase_date')
+    purchased_posts = Purchase.objects.filter(user=request.user).prefetch_related('media').order_by('-purchase_date')
+    sales = Purchase.objects.filter(post__author=request.user).prefetch_related('user', 'post').order_by('-purchase_date')
 
     context = {
         'user': request.user,
         'user_profile': user_profile,
         'user_posts': user_posts,
         'purchased_posts': purchased_posts,
-        'sold_posts': sold_posts,
         'sales': sales,
     }
     return render(request, 'tenrr/my_profile.html', context)
-
 
 # Signup view
 def signup_view(request):
@@ -236,7 +233,7 @@ def confirm_purchase(request, post_id):
 
         if user_profile.balance < post.price:
             messages.error(request, "You do not have enough balance to make this purchase.")
-            return redirect('tenrr:post_detail', post_id=post.id)
+            return redirect('tenrr:my_profile')
 
         with transaction.atomic():
             user_profile.balance -= Decimal(post.price)
@@ -245,13 +242,12 @@ def confirm_purchase(request, post_id):
             seller_profile.balance += Decimal(post.price)
             seller_profile.save()
 
-            Purchase.objects.create(user=request.user, post=post, buyer_note=buyer_note)
+            purchase = Purchase.objects.create(user=request.user, post=post, buyer_note=buyer_note)
+            
 
-            messages.success(request, "Purchase successful! The cost has been deducted from your balance. You can view your purchased items in My Profile.")
+            messages.success(request, "Purchase successful! The cost has been deducted from your balance.")
 
         return redirect('tenrr:my_profile')
-    else:
-        return redirect('tenrr:my_profile', post_id=post_id)
 
 @login_required
 def add_funds(request):
@@ -271,3 +267,36 @@ def add_funds(request):
         return redirect('tenrr:my_profile')
     else:
         return redirect('tenrr:my_profile')
+    
+
+@login_required
+def complete_sale_page(request, purchase_id):
+    purchase = get_object_or_404(Purchase, id=purchase_id)
+    if purchase.post.author != request.user:
+        messages.error(request, "You are not authorized to complete this sale.")
+        return redirect('tenrr:my_profile')
+    return render(request, 'tenrr/complete_sale_page.html', {'purchase': purchase})
+
+@login_required
+def confirm_complete_sale(request, purchase_id):
+    if request.method == 'POST':
+        purchase = get_object_or_404(Purchase, id=purchase_id, post__author=request.user) 
+
+        files = request.FILES.getlist('purchase_media')
+        for file in files:
+            PurchaseMedia.objects.create(purchase=purchase, file=file)
+
+        purchase.is_complete = True
+        purchase.save()
+
+        messages.success(request, "Sale completed successfully. Media sent to the buyer.")
+        return redirect('tenrr:my_profile')
+    else:
+        messages.error(request, "Invalid request method.")
+        return redirect('tenrr:my_profile')
+
+@login_required
+def view_sale_media(request, purchase_id):
+    purchase = get_object_or_404(Purchase, id=purchase_id, user=request.user)
+    media_files = purchase.media.all()
+    return render(request, 'tenrr/view_sale_media.html', {'media_files': media_files, 'purchase': purchase})
