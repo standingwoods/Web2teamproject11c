@@ -24,4 +24,5 @@ urlpatterns = [
     path('add_funds/', views.add_funds, name='add_funds'),
     path('confirm_complete_sale/<int:purchase_id>/', views.confirm_complete_sale, name='confirm_complete_sale'),
     path('view_sale_media/<int:purchase_id>/', views.view_sale_media, name='view_sale_media'),
+    path('hide_purchase/<int:purchase_id>/', views.hide_purchase, name='hide_purchase'),
 ]

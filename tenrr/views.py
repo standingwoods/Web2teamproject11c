@@ -300,3 +300,10 @@ def view_sale_media(request, purchase_id):
     purchase = get_object_or_404(Purchase, id=purchase_id, user=request.user)
     media_files = purchase.media.all()
     return render(request, 'tenrr/view_sale_media.html', {'media_files': media_files, 'purchase': purchase})
+
+@login_required
+def hide_purchase(request, purchase_id):
+    purchase = get_object_or_404(Purchase, id=purchase_id, post__author=request.user) 
+    purchase.hidden = True
+    purchase.save()
+    return redirect('tenrr:my_profile')
