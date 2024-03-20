@@ -4,25 +4,29 @@
 <div class="container">
     <h1>What you bought!</h1>
     {% for media in media_files %}
-    <div>
-        {% with file_ext=media.file.url|cut:"."|last %}
+        {% with file_ext=media.file.url|slice:"-3:" %}
+        <div>
             {% if file_ext|lower in "jpg,jpeg,png,gif" %}
                 <img src="{{ media.file.url }}" alt="Image" style="max-width: 100%; height: auto;">
             {% elif file_ext|lower in "mp4,mov" %}
                 <video width="320" height="240" controls>
-                    <source src="{{ media.file.url }}" type="video/mp4">
+                    <source src="{{ media.file.url }}" type="video/{{ file_ext }}">
                     Your browser does not support the video tag.
                 </video>
             {% elif file_ext|lower in "mp3,wav" %}
                 <audio controls>
-                    <source src="{{ media.file.url }}" type="audio/mpeg">
+                    <source src="{{ media.file.url }}" type="audio/{{ file_ext }}">
                     Your browser does not support the audio element.
                 </audio>
+            {% elif file_ext|lower == "pdf" %}
+                <object data="{{ media.file.url }}" type="application/pdf" width="600" height="500">
+                    <p>Your browser does not support PDFs. <a href="{{ media.file.url }}">Download the PDF</a>.</p>
+                </object>
             {% else %}
                 <a href="{{ media.file.url }}">Download file</a>
             {% endif %}
+        </div>
         {% endwith %}
-    </div>
     {% endfor %}
 </div>
 {% endblock %}
