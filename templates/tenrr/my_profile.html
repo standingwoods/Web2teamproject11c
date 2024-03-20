@@ -98,17 +98,26 @@
         {% if sales %}
             <div class="sales-list">
                 {% for sale in sales %}
-                    <div class="sale">
-                        <h3>{{ sale.post.title }}</h3>
-                        <p>{{ sale.post.content }}</p>
-                        <p>Bought by: {{ sale.user.username }}</p>
-                        <p>Note: {{ sale.buyer_note }}</p>
-                        <p>Price: £{{ sale.post.price }}</p>
-                        <!-- Complete Sale Button -->
-                        <form action="{% url 'tenrr:complete_sale_page' sale.id %}" method="get">
-                            <button type="submit" class="btn btn-primary">Complete Sale</button>
-                        </form>
-                    </div>
+                    {% if not sale.hidden %}
+                        <div class="sale">
+                            <h3>{{ sale.post.title }}</h3>
+                            <p>{{ sale.post.content }}</p>
+                            <p>Bought by: {{ sale.user.username }}</p>
+                            <p>Note: {{ sale.buyer_note }}</p>
+                            <p>Price: £{{ sale.post.price }}</p>
+                            {% if not sale.is_complete %}
+                                <form action="{% url 'tenrr:complete_sale_page' sale.id %}" method="get">
+                                    <button type="submit" class="btn btn-primary">Complete Sale</button>
+                                </form>
+                            {% endif %}
+                            {% if sale.is_complete %}
+                                <form action="{% url 'tenrr:hide_purchase' sale.id %}" method="post">
+                                    {% csrf_token %}
+                                    <button type="submit" class="btn btn-secondary">Remove Completed Sale</button>
+                                </form>
+                            {% endif %}
+                        </div>
+                    {% endif %}
                 {% endfor %}
             </div>
         {% else %}

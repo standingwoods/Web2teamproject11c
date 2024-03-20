@@ -47,6 +47,7 @@ class Purchase(models.Model):
     purchase_date = models.DateTimeField(auto_now_add=True)
     buyer_note = models.TextField(blank=True, null=True)
     is_complete = models.BooleanField(default=False)
+    hidden = models.BooleanField(default=False)
 
     def __str__(self):
         return f'{self.user.username} purchased {self.post.title}'
