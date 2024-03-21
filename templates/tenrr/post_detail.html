@@ -26,5 +26,9 @@
     {% else %}
         <p><a href="{% url 'tenrr:login' %}">Log in</a> to add a comment.</p>
     {% endif %}
+    <p>Posted by: {{ post.author.username }}</p>
+    {% if post.author.userprofile.contact_info %}
+        <p>Contact Info: {{ post.author.userprofile.contact_info }}</p>
+    {% endif %}
 </div>
 {% endblock %}
