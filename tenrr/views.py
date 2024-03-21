@@ -24,15 +24,15 @@ from decimal import Decimal
 def my_profile(request):
     user_profile, created = UserProfile.objects.get_or_create(user=request.user)
     if request.method == 'POST':
-        form = UserProfileForm(request.POST, instance=request.user.userprofile)
+        form = UserProfileForm(request.POST, instance=user_profile.user)
         if form.is_valid():
             form.save()
             messages.success(request, 'Profile updated successfully')
-            return HttpResponseRedirect(reverse('tenrr:my_profile'))
+            return redirect('tenrr:my_profile')
         else:
             messages.error(request, 'Please correct the error below.')
     else:
-        form = UserProfileForm(instance=request.user.userprofile)
+        form = UserProfileForm(instance=user_profile.user)
     user_posts = Post.objects.filter(author=request.user).order_by('-created_date')
     purchased_posts = Purchase.objects.filter(user=request.user).prefetch_related('media').order_by('-purchase_date')
     sales = Purchase.objects.filter(post__author=request.user).prefetch_related('user', 'post').order_by('-purchase_date')

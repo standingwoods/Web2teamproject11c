@@ -9,6 +9,7 @@ from django.shortcuts import redirect
 class UserProfileForm(forms.ModelForm):
     username = forms.CharField(max_length=128, help_text="Please enter your username.")
     email = forms.EmailField(max_length=254, help_text="Please enter your email.")
+    password = forms.CharField(widget=forms.PasswordInput, help_text="Please enter your password.")
     user_type = forms.ChoiceField(choices=UserProfile.USER_TYPE_CHOICES, help_text="Are you a buyer or seller?")
     contact_info = forms.CharField(widget=forms.Textarea, required=False, help_text="Please enter your contact information.")
 
