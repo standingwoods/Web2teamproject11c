@@ -23,6 +23,16 @@ from decimal import Decimal
 @login_required
 def my_profile(request):
     user_profile, created = UserProfile.objects.get_or_create(user=request.user)
+    if request.method == 'POST':
+        form = UserProfileForm(request.POST, instance=user_profile.user)
+        if form.is_valid():
+            form.save()
+            messages.success(request, 'Profile updated successfully')
+            return redirect('tenrr:my_profile')
+        else:
+            messages.error(request, 'Please correct the error below.')
+    else:
+        form = UserProfileForm(instance=user_profile.user)
     user_posts = Post.objects.filter(author=request.user).order_by('-created_date')
     purchased_posts = Purchase.objects.filter(user=request.user).prefetch_related('media').order_by('-purchase_date')
     sales = Purchase.objects.filter(post__author=request.user).prefetch_related('user', 'post').order_by('-purchase_date')
@@ -30,6 +40,7 @@ def my_profile(request):
     context = {
         'user': request.user,
         'user_profile': user_profile,
+        'form': form,
         'user_posts': user_posts,
         'purchased_posts': purchased_posts,
         'sales': sales,
@@ -147,8 +158,6 @@ def recommendations(request):
         return render(request, 'tenrr/recommendations.html', {'posts': recommended_posts})
     else:
         return render(request, 'tenrr/recommendations.html', {'login_prompt': True})
-
-
 
 @login_required
 def post(request):
