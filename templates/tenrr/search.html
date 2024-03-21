@@ -32,29 +32,23 @@
     .heart-btn.liked {
         color: red; 
     }
-    .buy-btn {
-        position: absolute;
-        bottom: 10px;
-        right: 10px;
+    .buy-btn, .comment-btn {
         font-size: 16px;
         padding: 5px 10px;
-        background-color: #4CAF50;
         color: white;
         border: none;
         border-radius: 5px;
         text-decoration: none;
+        position: absolute;
+        bottom: 10px;
     }
     .comment-btn {
-        position: absolute;
-        bottom: 10px;
         left: 10px;
-        font-size: 16px;
-        padding: 5px 10px;
         background-color: #2196F3;
-        color: white;
-        border: none;
-        border-radius: 5px;
-        text-decoration: none;
+    }
+    .buy-btn {
+        right: 10px;
+        background-color: #4CAF50;
     }
 </style>
 {% endblock %}
@@ -88,10 +82,7 @@
             <div class="like-container">
                 <button onclick="likePost({{ post.id }})" class="heart-btn {% if post.user_has_liked %}liked{% endif %}">❤</button>
                 <span id="likes-count-{{ post.id }}">{{ post.likes.count }}</span>
-                
             </div>
-            
-           
             {% if request.user.is_authenticated %}
             <a href="{% url 'tenrr:post_detail' post.id %}" class="comment-icon">
                 💬 <span>{{ post.comments.count }}</span>
@@ -102,8 +93,6 @@
             <a href="{% url 'tenrr:buy_post' post.id %}" class="buy-btn">Buy</a>
             {% endif %}
         </div>
-        {% empty %}
-        <p>No posts found.</p>
         {% endfor %}
     </div>
 </div>
