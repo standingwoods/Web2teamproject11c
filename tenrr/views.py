@@ -1,5 +1,5 @@
 from django.shortcuts import render, redirect, get_object_or_404
-from django.http import HttpResponse
+from django.http import HttpResponse, HttpResponseRedirect
 from django.contrib.auth import authenticate, login as auth_login
 from django.contrib.auth.models import User
 from django.contrib import messages
@@ -24,15 +24,15 @@ from decimal import Decimal
 def my_profile(request):
     user_profile, created = UserProfile.objects.get_or_create(user=request.user)
     if request.method == 'POST':
-        form = UserProfileForm(request.POST, instance=user_profile.user)
+        form = UserProfileForm(request.POST, instance=request.user.userprofile)
         if form.is_valid():
             form.save()
             messages.success(request, 'Profile updated successfully')
-            return redirect('tenrr:my_profile')
+            return HttpResponseRedirect(reverse('tenrr:my_profile'))
         else:
             messages.error(request, 'Please correct the error below.')
     else:
-        form = UserProfileForm(instance=user_profile.user)
+        form = UserProfileForm(instance=request.user.userprofile)
     user_posts = Post.objects.filter(author=request.user).order_by('-created_date')
     purchased_posts = Purchase.objects.filter(user=request.user).prefetch_related('media').order_by('-purchase_date')
     sales = Purchase.objects.filter(post__author=request.user).prefetch_related('user', 'post').order_by('-purchase_date')
