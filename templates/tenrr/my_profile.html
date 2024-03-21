@@ -124,6 +124,10 @@
             <p>You haven't sold anything yet.</p>
         {% endif %}
     </div>
+    <form action="{% url 'tenrr:delete_profile' %}" method="post" onsubmit="return confirm('Are you sure you want to delete your profile? This action cannot be undone.');">
+        {% csrf_token %}
+        <button type="submit" class="btn btn-danger">Delete Profile</button>
+    </form>
 </div>
 {% endblock %}
 <script>
