@@ -44,6 +44,18 @@
         border-radius: 5px;
         text-decoration: none;
     }
+    .comment-btn {
+        position: absolute;
+        bottom: 10px;
+        left: 10px;
+        font-size: 16px;
+        padding: 5px 10px;
+        background-color: #2196F3;
+        color: white;
+        border: none;
+        border-radius: 5px;
+        text-decoration: none;
+    }
 </style>
 {% endblock %}
 {% block title %}Search{% endblock %}
@@ -76,7 +88,16 @@
             <div class="like-container">
                 <button onclick="likePost({{ post.id }})" class="heart-btn {% if post.user_has_liked %}liked{% endif %}">❤</button>
                 <span id="likes-count-{{ post.id }}">{{ post.likes.count }}</span>
+                
             </div>
+            
+           
+            {% if request.user.is_authenticated %}
+            <a href="{% url 'tenrr:post_detail' post.id %}" class="comment-icon">
+                💬 <span>{{ post.comments.count }}</span>
+            </a>
+            <a href="{% url 'tenrr:add_comment_to_post' post.id %}" class="comment-btn">Comment</a>
+            {% endif %}
             {% if request.user.is_authenticated and request.user.userprofile.user_type == 'Buyer' %}
             <a href="{% url 'tenrr:buy_post' post.id %}" class="buy-btn">Buy</a>
             {% endif %}

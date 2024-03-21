@@ -6,8 +6,8 @@ from django.contrib import messages
 from django.contrib.auth import logout
 from django.contrib.auth.decorators import login_required
 from django.urls import reverse
-from tenrr.models import UserProfile
-from tenrr.forms import UserProfileForm
+from tenrr.models import UserProfile, Comment
+from tenrr.forms import UserProfileForm, CommentForm
 from django.contrib import messages
 from .forms import PostForm
 from .models import Post, Category
@@ -324,3 +324,23 @@ def delete_profile(request):
     messages.success(request, 'Your profile has been successfully deleted.')
     logout(request)
     return redirect('tenrr:index')
+
+@login_required
+def add_comment_to_post(request, post_id):
+    post = get_object_or_404(Post, pk=post_id)
+    if request.method == "POST":
+        form = CommentForm(request.POST)
+        if form.is_valid():
+            comment = form.save(commit=False)
+            comment.post = post
+            comment.user = request.user
+            comment.save()
+            return redirect('tenrr:post_detail', post_id=post.id)
+    else:
+        form = CommentForm()
+    return render(request, 'tenrr/add_comment_to_post.html', {'form': form, 'post': post})
+
+def post_detail(request, post_id):
+    post = get_object_or_404(Post, pk=post_id)
+    comments = post.comments.all()
+    return render(request, 'tenrr/post_detail.html', {'post': post, 'comments': comments})

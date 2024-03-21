@@ -2,6 +2,7 @@ from django.urls import path
 from tenrr import views
 from .views import like_post
 from .views import my_profile, edit_profile
+from .views import add_comment_to_post, post_detail  # Added
 
 app_name = 'tenrr'
 
@@ -26,4 +27,6 @@ urlpatterns = [
     path('view_sale_media/<int:purchase_id>/', views.view_sale_media, name='view_sale_media'),
     path('hide_purchase/<int:purchase_id>/', views.hide_purchase, name='hide_purchase'),
     path('delete_profile/', views.delete_profile, name='delete_profile'),
+    path('post/<int:post_id>/comment/', add_comment_to_post, name='add_comment_to_post'),  # Added
+    path('post/<int:post_id>/', post_detail, name='post_detail'),  # Added
 ]
