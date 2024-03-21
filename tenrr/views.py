@@ -307,3 +307,11 @@ def hide_purchase(request, purchase_id):
     purchase.hidden = True
     purchase.save()
     return redirect('tenrr:my_profile')
+
+@login_required
+def delete_profile(request):
+    user = request.user
+    user.delete()
+    messages.success(request, 'Your profile has been successfully deleted.')
+    logout(request)
+    return redirect('tenrr:index')
