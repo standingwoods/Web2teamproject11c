@@ -2,6 +2,9 @@ from django import forms
 from django.contrib.auth.models import User
 from tenrr.models import UserProfile
 from .models import Post
+from django.core.exceptions import ValidationError
+from django.contrib import messages
+from django.shortcuts import redirect
 
 class UserProfileForm(forms.ModelForm):
     username = forms.CharField(max_length=128, help_text="Please enter your username.")
@@ -18,3 +21,14 @@ class PostForm(forms.ModelForm):
     class Meta:
         model = Post
         fields = ['title', 'content', 'category', 'price']
+        error_messages = {
+            'price': {
+                'invalid': "Enter a valid number.",
+            },
+        }
+   
+    def clean_price(self):
+        price = self.cleaned_data.get('price')
+        if price is not None and price < 0:
+            raise ValidationError('Ensure this value is greater than or equal to 0.')
+        return price
