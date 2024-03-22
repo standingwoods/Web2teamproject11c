@@ -5,6 +5,13 @@ aioitertools
 aiosignal
 aiosqlite
 alabaster
+anaconda-anon-usage
+anaconda-catalogs
+anaconda-client
+anaconda-cloud-auth
+anaconda-navigator
+anaconda-project
+anyio
 appdirs==1.4.4
 argon2-cffi
 argon2-cffi-bindings
